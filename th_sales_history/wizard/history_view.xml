@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="th_sale_history_form">
+        <field name="name">th.sale.history.form</field>
+        <field name="model">sale.history</field>
+        <field name="arch" type="xml">
+            <form string="Sale History">
+                <field name="history_ids" nolabel='1'>
+                    <tree string="Sales Line" editable='bottom'
+                        create="false">
+                        <field name='select' />
+                        <field name='product_id' readonly='1' />
+                        <field name='order_id' readonly='1' />
+                        <field name='s_date' readonly='1' />
+                        <field name='s_qty' readonly='1' />
+                        <field name='s_unit_price' readonly='1' />
+                        <field name='s_subtotal' readonly='1' />
+                        <field name='c_qty' />
+                        <field name='c_unit_price' />
+                        <field name='c_subtotal' />
+                    </tree>
+                </field>
+                <footer>
+                    <button string='Add Products' name="add_products"
+                        type="object" class="btn-primary" />
+                    <button string="Cancel" class="btn-default"
+                        special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="th_sale_history_sale_order_inherit">
+        <field name="name">th.sale.order.history</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref='sale.view_order_form' />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='oe_button_box']" position='inside'>
+                <button name='open_sale_history' type="object"
+                    icon="fa-shopping-cart" class="oe_stat_button"
+                    attrs="{'invisible': [('partner_id', '=', False)]}">
+                    <field name="order_count" widget="statinfo"
+                        string="Sales History" options="{'terminology': 'Add'}" />
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
