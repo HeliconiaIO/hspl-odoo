@@ -10,6 +10,7 @@ Public Odoo Apps Development repository from Tech Heliconia
 
 * 10.0
 
-###[Tech Heliconia](https://tech.heliconia.in)###
-Website: [tech.heliconia.in](https://tech.heliconia.in)
+### Tech Heliconia ###
+
+Website: [Tech.Heliconia.in](https://tech.heliconia.in)
 Mail: Hello@heliconia.in (<hello@heliconia.in>)
