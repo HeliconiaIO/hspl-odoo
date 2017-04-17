@@ -1,59 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <odoo>
-  <data>
-    <!-- explicit list view definition -->
-    <!--
-    <record model="ir.ui.view" id="../../repo/git/odoodev/th_recycle_bin.list">
-      <field name="name">../../repo/git/odoodev/th_recycle_bin list</field>
-      <field name="model">../../repo/git/odoodev/th_recycle_bin.../../repo/git/odoodev/th_recycle_bin</field>
-      <field name="arch" type="xml">
-        <tree>
-          <field name="name"/>
-          <field name="value"/>
-          <field name="value2"/>
-        </tree>
-      </field>
-    </record>
-    -->
+    <data>
+        <menuitem id="th_recycle_bin" name="Recycle Bin"
+            parent="base.menu_custom" sequence="9" />
 
-    <!-- actions opening views on models -->
-    <!--
-    <record model="ir.actions.act_window" id="../../repo/git/odoodev/th_recycle_bin.action_window">
-      <field name="name">../../repo/git/odoodev/th_recycle_bin window</field>
-      <field name="res_model">../../repo/git/odoodev/th_recycle_bin.../../repo/git/odoodev/th_recycle_bin</field>
-      <field name="view_mode">tree,form</field>
-    </record>
-    -->
+        <record id="th_recycle_bin_tree" model="ir.ui.view">
+            <field name="name">th.recycle.bin.tree</field>
+            <field name="model">th.recycle.bin</field>
+            <field name="arch" type="xml">
+                <tree string="RecycleBin">
+                    <field name="model_id" />
+                    <!-- <field name="name" string="Order Number"/> -->
+                </tree>
+            </field>
+        </record>
 
-    <!-- server action to the one above -->
-    <!--
-    <record model="ir.actions.server" id="../../repo/git/odoodev/th_recycle_bin.action_server">
-      <field name="name">../../repo/git/odoodev/th_recycle_bin server</field>
-      <field name="model_id" ref="model_../../repo/git/odoodev/th_recycle_bin_../../repo/git/odoodev/th_recycle_bin"/>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": self._name,
-        }
-      </field>
-    </record>
-    -->
+        <record id="th_recycle_bin_form" model="ir.ui.view">
+            <field name="name">th.recycle.bin.form</field>
+            <field name="model">th.recycle.bin</field>
+            <field name="arch" type="xml">
+                <form string="RecycleBin Configuration">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" placeholder="Enter name"/>
+                            </h1>
+                        </div>
 
-    <!-- Top menu item -->
-    <!--
-    <menuitem name="../../repo/git/odoodev/th_recycle_bin" id="../../repo/git/odoodev/th_recycle_bin.menu_root"/>
-    -->
-    <!-- menu categories -->
-    <!--
-    <menuitem name="Menu 1" id="../../repo/git/odoodev/th_recycle_bin.menu_1" parent="../../repo/git/odoodev/th_recycle_bin.menu_root"/>
-    <menuitem name="Menu 2" id="../../repo/git/odoodev/th_recycle_bin.menu_2" parent="../../repo/git/odoodev/th_recycle_bin.menu_root"/>
-    -->
-    <!-- actions -->
-    <!--
-    <menuitem name="List" id="../../repo/git/odoodev/th_recycle_bin.menu_1_list" parent="../../repo/git/odoodev/th_recycle_bin.menu_1"
-              action="../../repo/git/odoodev/th_recycle_bin.action_window"/>
-    <menuitem name="Server to list" id="../../repo/git/odoodev/th_recycle_bin" parent="../../repo/git/odoodev/th_recycle_bin.menu_2"
-              action="../../repo/git/odoodev/th_recycle_bin.action_server"/>
-    -->
-  </data>
+                        <group>
+                            <group>
+                                <field name="model_id" />
+                            </group>
+                            <group>
+                                <field name="auto_delete" />
+                            </group>
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="th_recycle_bin_configuration_act" model="ir.actions.act_window">
+            <field name="name">Configuration</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">th.recycle.bin</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="th_recycle_bin_config" name="Configuration"
+            parent="th_recycle_bin" action="th_recycle_bin_configuration_act"
+            sequence="2" />
+
+    </data>
 </odoo>
