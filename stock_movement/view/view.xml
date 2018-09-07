@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+
+        <!--main menu-->
+        <menuitem
+                id="menu_stock_movement" name="Stock Movement" sequence="3"/>
+
+        <!--form view-->
+        <record id="view_stock_movement_form" model="ir.ui.view">
+            <field name="name">stock.movement.form</field>
+            <field name="model">stock.movement</field>
+            <field name="priority" eval="16"/>
+            <field name="arch" type="xml">
+                <form string="Stock Movement">
+                    <sheet>
+                        <notebook colspan="8">
+                            <page name="stock_movement" string="Stock">
+                                <group name="Stock">
+                                    <table >
+                                        <field name ="from_date" />
+                                        <field name="to_date"/>
+                                    </table>
+                                    <button name="generate" type="object" string="Generate" class="oe_highlight"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <!--&lt;!&ndash;tree view &ndash;&gt;-->
+        <!--<record id="view_stock_movement_tree" model="ir.ui.view">-->
+
+        <!--<field name="name">stock.movement.tree</field>-->
+        <!--<field name="model">stock.movement</field>-->
+        <!--<field name="priority" eval="8"/>-->
+        <!--<field name="arch" type="xml">-->
+        <!--<tree string="Stock Movement">-->
+        <!--<field name ="from_date"/>-->
+        <!--<field name="to_date"/>-->
+        <!--&lt;!&ndash;<field name ="calc"/>&ndash;&gt;-->
+        <!--</tree>-->
+        <!--</field>-->
+        <!--</record>-->
+
+
+        <record id="product_template_form_view_inherited_th" model="ir.ui.view">
+            <field name="name">product.template.tree.stock.tree</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <field name="type" position="after">
+                    <field name="last_move_date"/>
+                </field>
+            </field>
+        </record>
+
+
+        <record id="product_template_tree_stock_view_2" model="ir.ui.view">
+            <field name="name">product.template.tree.stock.tree</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="last_move_date"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="product_product_tree_view_inherited_th" model="ir.ui.view">
+            <field name="name">product.product.tree.stock.tree</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="last_move_date"/>
+                </field>
+            </field>
+        </record>
+
+
+        <record id="product_template_tree_stock_view" model="ir.ui.view">
+            <field name="name">product.template.tree.stock.tree</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <tree string="Product">
+                    <!--<field name="sequence" widget="handle"/>-->
+                    <!--<field name="default_code"/>-->
+                    <!--<field name="name"/>-->
+                    <!--<field name="list_price"/>-->
+                    <field name="standard_price"/>
+                    <field name="categ_id"/>
+                    <field name="type"/>
+                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" groups="product.group_uom"/>
+                    <field name="active" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!--################################################-->
+
+
+        <!--<record id="view_inherit_prod_temp_tree" model="ir.ui.view">-->
+            <!--<field name="name">product.template.tree.inherit</field>-->
+            <!--<field name="model">product.template</field>-->
+            <!--<field name="inherit_id" ref="product.product_template_tree_view"/>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<field name="name" position="after">-->
+                    <!--<field name="demo"/>-->
+                <!--</field>-->
+            <!--</field>-->
+        <!--</record>-->
+
+        <!--################################################-->
+
+
+        <!--action-->
+        <record model="ir.actions.act_window" id="action_view_stock_movement">
+            <field name="name">Stock</field>
+            <field name="res_model">stock.movement</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+        </record>
+
+
+        <menuitem id="menu_sub_stock" name="Stock Date" parent="menu_stock_movement" action="action_view_stock_movement"/>
+
+    </data>
+</odoo>
