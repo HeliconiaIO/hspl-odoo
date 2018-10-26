@@ -1,135 +1,266 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
+        <!--form view-->
+        <!--<record id="view_stock_movement_form" model="ir.ui.view">-->
+        <!--<field name="name">stock.movement.form</field>-->
+        <!--<field name="model">stock.movement</field>-->
+        <!--<field name="priority" eval="16"/>-->
+        <!--<field name="arch" type="xml">-->
+        <!--<form string="Stock Movement">-->
+        <!--<sheet>-->
+        <!--<notebook colspan="8">-->
+        <!--<page name="stock_movement" string="Stock">-->
+        <!--<group name="Stock">-->
+        <!--<table >-->
+        <!--<field name ="from_date" />-->
+        <!--<field name="to_date"/>-->
+        <!--</table>-->
+        <!--<button name="generate" type="object" string="Generate" class="oe_highlight"/>-->
+        <!--</group>-->
+        <!--</page>-->
+        <!--</notebook>-->
+        <!--</sheet>-->
+        <!--</form>-->
+        <!--</field>-->
+        <!--</record>-->
+
+        <!--<record id="product_template_form_view_inherited_th" model="ir.ui.view">-->
+        <!--<field name="name">product.template.tree.stock.tree</field>-->
+        <!--<field name="model">product.template</field>-->
+        <!--<field name="inherit_id" ref="product.product_template_form_view"/>-->
+        <!--<field name="arch" type="xml">-->
+        <!--<field name="type" position="after">-->
+        <!--<field name="last_move_date"/>-->
+        <!--</field>-->
+        <!--</field>-->
+        <!--</record>-->
 
 
-        <!--main menu-->
-        <menuitem
-                id="menu_stock_movement" name="Stock Movement" sequence="3"/>
+        <!--tree view-->
+        <!--<record id="product_template_tree_stock_view_2" model="ir.ui.view">-->
+        <!--<field name="name">product.template.tree.stock.tree</field>-->
+        <!--<field name="model">product.template</field>-->
+        <!--<field name="inherit_id" ref="product.product_template_tree_view"/>-->
+        <!--<field name="arch" type="xml">-->
+        <!--<field name="name" position="after">-->
+        <!--<field name="last_move_date"/>-->
+        <!--</field>-->
+        <!--</field>-->
+        <!--</record>-->
+
+        <!--&lt;!&ndash;stock rotation tree view&ndash;&gt;-->
+        <!--<record id="stock_rotation_tree_view" model="ir.ui.view">-->
+        <!--<field name="name">Stock.Rotation.tree.view</field>-->
+        <!--<field name="model">product.product</field>-->
+        <!--<field name="inherit_id" ref="product.product_product_tree_view"/>-->
+
+        <!--</record>-->
+        <!-- View Inheritance -->
+        <record id="view_inherited" model="ir.ui.view">
+            <field name="name">view_inherited</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='phone']" position="after">
+                    <field name="create_date"/>
+                    <field name="write_date"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <!--product category inherit form view-->
+        <record id="product_category_form_view" model="ir.ui.view">
+            <field name="name">product.category.form.view</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <field name="type" position="after">
+                    <field name="limit_days"/>
+                </field>
+            </field>
+        </record>
+
+
+        <!--res company inherit form view-->
+        <record id="res_company_setting_form_view" model="ir.ui.view">
+            <field name="name">res.company.settings.form.view</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/notebook/page/group/group/field[@name='website']" position="after">
+                    <field name="sent_alert" />
+                    <field name="limit_days" />
+                    <field name="alert_user" />
+                </xpath>
+            </field>
+        </record>
+
+
+        <!--stock Config Settings inherit form view-->
+        <record id="stock_config_setting_form_view" model="ir.ui.view">
+            <field name="name">stock.config.settings.form.view</field>
+            <field name="model">stock.config.settings</field>
+            <field name="inherit_id" ref="stock.view_stock_config_settings"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='traceability']" position="before">
+                    <group string="Non-Moving-Product Alert" name="non_moving_product_alert">
+                        <field name="sent_alert"/>
+                        <field name="limit_days" attrs="{'invisible':[('sent_alert', '!=','globally')]}"/>
+                        <field name="alert_user" attrs="{'invisible':[('sent_alert', '!=','globally')]}" />
+                        <!--<field name="display_message_category_wise" attrs="{'readonly':[('sent_alert', '=','category_wise')]}" />-->
+                        <!--<field name="display_message_warehouses_wise" attrs="{'readonly':[('sent_alert', '=','warehouse_wise')]}" />-->
+
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+
+
+        <!-- ir.cron MODEL for template send email creation -->
+        <record id="email_alert_send" model="ir.cron">
+            <field name="name">email.alert.send</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'product.product'" />
+            <field name="function" eval="'send_email_alert'" />
+            <field name="args" eval="" />
+        </record>
+
+        <!-- ir.cron model action creation -->
+        <record id="stock_move_cron" model="ir.cron">
+            <field name="name">stock.move.cron</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'product.product'" />
+            <field name="function" eval="'days_cron'" />
+            <field name="args" eval="" />
+        </record>
+
+        <!-- ir.cron  email alert action creation -->
+        <record id="send_email_alert" model="ir.cron">
+            <field name="name">send.email</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'product.product'" />
+            <field name="function" eval="'send_email_alert'" />
+            <field name="args" eval="" />
+        </record>
+
+        <!-- ir.cron user input days action creation -->
+        <record id="user_input_days_creation" model="ir.cron">
+            <field name="name">user.input.days.creation</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'product.product'" />
+            <field name="function" eval="'limit_days'" />
+            <field name="args" eval="" />
+        </record>
+
+
+        <!--tree view-->
+        <record id="stock_movement_tree_view" model="ir.ui.view">
+            <field name="name">stock.movement.tree.view</field>
+            <field name="model">product.product</field>
+            <!--<field name="inherit_id" ref="stock.view_stock_quant_tree"/>-->
+            <field name="arch" type="xml">
+                <tree string="Stock Movement">
+                    <field name="name"/>
+                    <field name="attribute_value_ids"/>
+                    <field name="last_move_date"/>
+                    <field name="move_days"/>
+                    <!--<field name="inventory_value"/>-->
+                    <field name="qty_available"/>
+                </tree>
+            </field>
+        </record>
 
         <!--form view-->
-        <record id="view_stock_movement_form" model="ir.ui.view">
-            <field name="name">stock.movement.form</field>
-            <field name="model">stock.movement</field>
-            <field name="priority" eval="16"/>
+        <record id="stock_movement_form_view" model="ir.ui.view">
+            <field name="name">stock.movement.form.view</field>
+            <field name="model">product.product</field>
             <field name="arch" type="xml">
                 <form string="Stock Movement">
                     <sheet>
-                        <notebook colspan="8">
-                            <page name="stock_movement" string="Stock">
-                                <group name="Stock">
-                                    <table >
-                                        <field name ="from_date" />
-                                        <field name="to_date"/>
-                                    </table>
-                                    <button name="generate" type="object" string="Generate" class="oe_highlight"/>
-                                </group>
-                            </page>
-                        </notebook>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="last_move_date"/>
+                            <!--<button name="send_email_alert" string="Button" type="object"/>-->
+                        </group>
                     </sheet>
                 </form>
             </field>
         </record>
 
-
-        <!--&lt;!&ndash;tree view &ndash;&gt;-->
-        <!--<record id="view_stock_movement_tree" model="ir.ui.view">-->
-
-        <!--<field name="name">stock.movement.tree</field>-->
-        <!--<field name="model">stock.movement</field>-->
-        <!--<field name="priority" eval="8"/>-->
-        <!--<field name="arch" type="xml">-->
-        <!--<tree string="Stock Movement">-->
-        <!--<field name ="from_date"/>-->
-        <!--<field name="to_date"/>-->
-        <!--&lt;!&ndash;<field name ="calc"/>&ndash;&gt;-->
-        <!--</tree>-->
-        <!--</field>-->
-        <!--</record>-->
-
-
-        <record id="product_template_form_view_inherited_th" model="ir.ui.view">
-            <field name="name">product.template.tree.stock.tree</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_form_view"/>
-            <field name="arch" type="xml">
-                <field name="type" position="after">
-                    <field name="last_move_date"/>
-                </field>
-            </field>
-        </record>
-
-
-        <record id="product_template_tree_stock_view_2" model="ir.ui.view">
-            <field name="name">product.template.tree.stock.tree</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_tree_view"/>
-            <field name="arch" type="xml">
-                <field name="name" position="after">
-                    <field name="last_move_date"/>
-                </field>
-            </field>
-        </record>
-
-        <record id="product_product_tree_view_inherited_th" model="ir.ui.view">
-            <field name="name">product.product.tree.stock.tree</field>
+        <!-- kanban view-->
+        <record id="stock_movement_kanban_view" model="ir.ui.view">
+            <field name="name">stock.movement.kanban.view</field>
             <field name="model">product.product</field>
-            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="inherit_id" ref="product.product_kanban_view"/>
             <field name="arch" type="xml">
-                <field name="name" position="after">
-                    <field name="last_move_date"/>
-                </field>
+
+                <xpath expr='//kanban/templates/t/div/div[3]/ul' position="before">
+                    <strong><li>Last Move Dt.: <field name="last_move_date"/></li></strong>
+                    <strong><li>Days: <field name="move_days"/></li></strong>
+                    <strong><li>Available QTY : <field name="attribute_value_ids"/></li></strong>
+
+                </xpath>
+                <!--</kanban>-->
             </field>
+
+
+
         </record>
-
-
-        <record id="product_template_tree_stock_view" model="ir.ui.view">
-            <field name="name">product.template.tree.stock.tree</field>
-            <field name="model">product.template</field>
-            <field name="arch" type="xml">
-                <tree string="Product">
-                    <!--<field name="sequence" widget="handle"/>-->
-                    <!--<field name="default_code"/>-->
-                    <!--<field name="name"/>-->
-                    <!--<field name="list_price"/>-->
-                    <field name="standard_price"/>
-                    <field name="categ_id"/>
-                    <field name="type"/>
-                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" groups="product.group_uom"/>
-                    <field name="active" invisible="1"/>
-                </tree>
-            </field>
-        </record>
-
-
-        <!--################################################-->
-
-
-        <!--<record id="view_inherit_prod_temp_tree" model="ir.ui.view">-->
-            <!--<field name="name">product.template.tree.inherit</field>-->
-            <!--<field name="model">product.template</field>-->
-            <!--<field name="inherit_id" ref="product.product_template_tree_view"/>-->
-            <!--<field name="arch" type="xml">-->
-                <!--<field name="name" position="after">-->
-                    <!--<field name="demo"/>-->
-                <!--</field>-->
-            <!--</field>-->
-        <!--</record>-->
-
-        <!--################################################-->
-
 
         <!--action-->
         <record model="ir.actions.act_window" id="action_view_stock_movement">
             <field name="name">Stock</field>
-            <field name="res_model">stock.movement</field>
+            <field name="res_model">product.product</field>
             <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[]</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('last_move_date', '!=', False)]</field>
+        </record>
+
+        <!--view_id tree-->
+        <record id="action_sub_tree_view" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="stock_movement_tree_view"/>
+            <field name="act_window_id" ref="action_view_stock_movement"/>
+        </record>
+
+        <!--view_id form-->
+        <record id="action_sub_form_view" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="stock_movement_form_view"/>
+            <field name="act_window_id" ref="action_view_stock_movement"/>
         </record>
 
 
-        <menuitem id="menu_sub_stock" name="Stock Date" parent="menu_stock_movement" action="action_view_stock_movement"/>
+        <!--main menu-->
+
+        <menuitem id="menu_stock_movement" name="Stock " sequence="3"/>
+        <menuitem id="menu_sub_stock" name="Stock Date" sequence="5" parent="menu_stock_movement"/>
+        <menuitem id="menu_stock_rotation_stock" sequence="4" name="Slow Moving Product Report" parent="menu_stock_movement" action="action_view_stock_movement"/>
+        <menuitem id="menu_stock_rotation" name="Slow Moving Product Report" parent="sales_team.menu_sale_report" action="action_view_stock_movement"/>
+
 
     </data>
 </odoo>

@@ -3,13 +3,14 @@
     'summary': """Stock Movement""",
     'version': '1.0',
     'description': """This module is for stock_movement report generation""",
-    'author': 'Vaishnav Vrushparva ',
+    'author': 'Tech heliconia',
     'company': 'Tech heliconia Solutions',
     'website': 'https://tech.heliconia.in',
     'category': 'Tools',
-    'depends': ['base', 'stock','product'],
+    'depends': ['base', 'stock', 'product', 'sales_team'],
     'data': [
-        'view/view.xml'
+        'view/view.xml',
+        'wizard/wizard_view.xml'
     ],
     'demo': [],
     'installable': True,
