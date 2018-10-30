@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+
+        <!--this act_window working on (menu like action/delete ...etc....)-->
+        <!--<act_window id="stock_movement_wizard_view"-->
+        <!--name="Stock Movement"-->
+        <!--res_model="stock.wizard"-->
+        <!--src_model="product.product"-->
+        <!--view_mode="form"-->
+        <!--targer="new"-->
+        <!--multi="True"/>-->
+
+        <!--form view-->
+        <record id="wizard_view_stock_movement" model="ir.ui.view">
+            <field name="name">Stock Movement</field>
+            <field name="model">stock.wizard</field>
+            <!--<field name="view_type">form</field>-->
+            <field name="arch" type="xml">
+                <form string="Stock Movement">
+                    <sheet>
+                        <group>
+                            <field name="from_date" placeholder="Enter Start Date..."/>
+                            <field name="to_date" placeholder="Enter End Date..."/>
+                            <!--<field name="warehouse_name" required="3" placeholder="Select Warehouse's"/>-->
+                        </group>
+                        <group>
+                            <field name="days" />
+                        </group>
+                        <group>
+                            <field name="cate_ware_selection" widget="radio"/>
+                        </group>
+                        <group>
+                            <!--<field name="current_category_id"  widget="many2many_tags" attrs="{'invisible':[('cate_ware_selection', '!=','category')], 'required':[('cate_ware_selection', '!=','warehouse')]}"/>-->
+                            <field name="current_category_id"  widget="many2many_tags"
+                                   attrs="{'invisible':[('cate_ware_selection', '!=','category')],
+                                'required':[('cate_ware_selection', '=','category')]}"/>
+                        </group>
+                        <group>
+                            <!--<field name="current_warehouse_id"  widget="many2many_tags" attrs="{'invisible':[('cate_ware_selection', '!=','warehouse')], 'required':[('cate_ware_selection', '!=','category')]}"/>-->
+                            <field name="current_warehouse_id"  widget="many2many_tags"
+                                   attrs="{'invisible':[('cate_ware_selection', '!=','warehouse')],
+                                  'required':[('cate_ware_selection', '=','warehouse')]}"/>
+                        </group>
+
+                        <!--<group>-->
+                            <!--<field name="current_category_id"  widget="many2many_tags"-->
+                                   <!--attrs="{'invisible':[('cate_ware_selection', '!=','category')],-->
+                                <!--'required':[('cate_ware_selection', '=','category')}"/>-->
+                        <!--</group>-->
+                        <!--<group>-->
+                            <!--<field name="current_warehouse_id"  widget="many2many_tags"-->
+                                   <!--attrs="{'invisible':[('cate_ware_selection', '!=','warehouse')],-->
+                                  <!--'required':[('cate_ware_selection', '=','warehouse')}"/>-->
+                        <!--</group>-->
+                    </sheet>
+                    <footer>
+                        <button type="object"  name="generate_report"  class="oe_highlight" string="Generate"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <!-- Testing email template for transient model -->
+        <record id="email_alert_template" model="mail.template">
+            <field name="name">Email Alert</field>
+            <field name="email_from">demotech.heliconia@gmail.com</field>
+            <field name="subject">Product List's</field>
+            <field name="email_to">vrushparva27@gmail.com</field>
+            <field name="model_id" ref="stock_movement.model_product_product_report"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html">
+                <![CDATA[
+          <p><br/><br/>
+
+          <table border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Last Move Date</th>
+                    <th>Days Unsell</th>
+                    <th>Quantity Avalable</th>
+                </tr>
+            </thead>
+            <tbody>
+                % for product in object.get_products():
+                <tr>
+                    <td width=200px>${product.name}</td>
+                    <td width=200px>${product.last_move_date}</td>
+                    <td width=200px>${product.move_days}</td>
+                    <td width=200px>${product.qty_available}</td>
+                </tr>
+                % endfor
+            </tbody>
+            </table>
+
+        ]]>
+            </field>
+        </record>
+
+        <!--email template for transient model and working for list od products-->
+        <!--EMAIL TEMPLATE -->
+        <record id="email_alert_template" model="mail.template">
+            <field name="name">Email Alert</field>
+            <field name="email_from">demotech.heliconia@gmail.com</field>
+            <field name="subject">Product List's</field>
+            <field name="email_to">${object.get_users()|safe}</field>
+            <field name="model_id" ref="stock_movement.model_product_product_report"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html">
+                <![CDATA[
+          <p><br/><br/>
+
+          <table border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Last Move Date</th>
+                    <th>Days Unsell</th>
+                    <th>Quantity Avalable</th>
+                </tr>
+            </thead>
+            <tbody>
+                % for product in object.get_products():
+                <tr>
+                    <td width=200px>${product.name}</td>
+                    <td width=200px>${product.last_move_date}</td>
+                    <td width=200px>${product.move_days}</td>
+                    <td width=200px>${product.qty_available}</td>
+                </tr>
+                % endfor
+            </tbody>
+            </table>
+
+        ]]>
+            </field>
+        </record>
+
+
+        <!--action-->
+        <record model="ir.actions.act_window" id="action_stock_movement_wizard">
+            <field name="name">Stock Movement</field>
+            <field name="res_model">stock.wizard</field>
+            <field name="src_model">product.product</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+
+        <menuitem id="menu_stock" name="Stock Rotation"  action="action_stock_movement_wizard" parent="menu_sub_stock"/>
+
+    </data>
+</odoo>
+
