@@ -57,28 +57,48 @@
 
         <!--</record>-->
         <!-- View Inheritance -->
-        <record id="view_inherited" model="ir.ui.view">
-            <field name="name">view_inherited</field>
-            <field name="model">res.partner</field>
-            <field name="inherit_id" ref="base.view_partner_form" />
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='phone']" position="after">
-                    <field name="create_date"/>
-                    <field name="write_date"/>
-                </xpath>
-            </field>
-        </record>
+        <!--<record id="view_inherited" model="ir.ui.view">-->
+            <!--<field name="name">view_inherited</field>-->
+            <!--<field name="model">res.partner</field>-->
+            <!--<field name="inherit_id" ref="base.view_partner_form" />-->
+            <!--<field name="arch" type="xml">-->
+                <!--<xpath expr="//field[@name='phone']" position="after">-->
+                    <!--<field name="create_date"/>-->
+                    <!--<field name="write_date"/>-->
+                <!--</xpath>-->
+            <!--</field>-->
+        <!--</record>-->
 
 
         <!--product category inherit form view-->
-        <record id="product_category_form_view" model="ir.ui.view">
-            <field name="name">product.category.form.view</field>
+        <record id="th_product_category_form_view" model="ir.ui.view">
+            <field name="name">th_product_category_form_view</field>
             <field name="model">product.category</field>
             <field name="inherit_id" ref="product.product_category_form_view"/>
             <field name="arch" type="xml">
-                <field name="type" position="after">
-                    <field name="limit_days"/>
-                </field>
+                <group name="first" position="after">
+                    <group name="non_moving_product_config" string="Non Moving Product Config" attrs="{'invisible':[('sent_alert', '!=','category_wise')]}">
+                        <field name="sent_alert" invisible="1"/>
+                        <field name="limit_days" />
+                        <field name="alert_user" widget="many2many_tags" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                    </group>
+                </group>
+            </field>
+        </record>
+
+       <!--stock warehouse inherit form view-->
+        <record id="th_stock_warehouse_form_view" model="ir.ui.view">
+            <field name="name">th_stock_warehouse_form_view</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.view_warehouse"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="before">
+                    <group name="non_moving_product_config" string="Non Moving Product Config" attrs="{'invisible':[('sent_alert', '!=','warehouse_wise')]}">
+                        <field name="sent_alert" invisible="1"/>
+                        <field name="limit_days" />
+                        <field name="alert_user" widget="many2many_tags" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                    </group>
+                </xpath>
             </field>
         </record>
 
@@ -89,10 +109,22 @@
             <field name="model">res.company</field>
             <field name="inherit_id" ref="base.view_company_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//form/sheet/notebook/page/group/group/field[@name='website']" position="after">
-                    <field name="sent_alert" />
-                    <field name="limit_days" />
-                    <field name="alert_user" />
+                <xpath expr="//notebook/page[1]" position="after">
+                    <page string="Non Moving Product Config" name="non_moving_product_config">
+                        <group>
+                            <field name="sent_alert" />
+                            <field name="limit_days" attrs="{'invisible':[('sent_alert', '!=','globally')], 'required': [('sent_alert', '=','globally')]}"/>
+                            <field name="alert_user" widget="many2many_tags" attrs="{'invisible':[('sent_alert', '!=','globally')], 'required': [('sent_alert', '=','globally')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                            <label for="id" attrs="{'invisible':[('sent_alert', '!=','category_wise')]}"/>
+                            <p class="text-muted" attrs="{'invisible':[('sent_alert', '!=','category_wise')]}">
+                                You can set <b>Limit Days</b> and <b>Users to be Notified</b> from each Product Category.
+                            </p>
+                            <label for="id" attrs="{'invisible':[('sent_alert', '!=','warehouse_wise')]}"/>
+                            <p class="text-muted" attrs="{'invisible':[('sent_alert', '!=','warehouse_wise')]}">
+                                You can set <b>Limit Days</b> and <b>Users to be Notified</b> from each Warehouse.
+                            </p>
+                        </group>
+                    </page>
                 </xpath>
             </field>
         </record>
@@ -106,12 +138,17 @@
             <field name="arch" type="xml">
                 <xpath expr="//group[@name='traceability']" position="before">
                     <group string="Non-Moving-Product Alert" name="non_moving_product_alert">
-                        <field name="sent_alert"/>
-                        <field name="limit_days" attrs="{'invisible':[('sent_alert', '!=','globally')]}"/>
-                        <field name="alert_user" attrs="{'invisible':[('sent_alert', '!=','globally')]}" />
-                        <!--<field name="display_message_category_wise" attrs="{'readonly':[('sent_alert', '=','category_wise')]}" />-->
-                        <!--<field name="display_message_warehouses_wise" attrs="{'readonly':[('sent_alert', '=','warehouse_wise')]}" />-->
-
+                        <field name="sent_alert" />
+                        <field name="limit_days" attrs="{'invisible':[('sent_alert', '!=','globally')], 'required': [('sent_alert', '=','globally')]}"/>
+                        <field name="alert_user" widget="many2many_tags" attrs="{'invisible':[('sent_alert', '!=','globally')], 'required': [('sent_alert', '=','globally')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        <label for="id" attrs="{'invisible':[('sent_alert', '!=','category_wise')]}"/>
+                        <p class="text-muted" attrs="{'invisible':[('sent_alert', '!=','category_wise')]}">
+                            You can set <b>Limit Days</b> and <b>Users to be Notified</b> from each Product Category.
+                        </p>
+                        <label for="id" attrs="{'invisible':[('sent_alert', '!=','warehouse_wise')]}"/>
+                        <p class="text-muted" attrs="{'invisible':[('sent_alert', '!=','warehouse_wise')]}">
+                            You can set <b>Limit Days</b> and <b>Users to be Notified</b> from each Warehouse.
+                        </p>
                     </group>
                 </xpath>
             </field>
@@ -135,7 +172,7 @@
         <!-- ir.cron model action creation -->
         <record id="stock_move_cron" model="ir.cron">
             <field name="name">stock.move.cron</field>
-            <field name="active" eval="False" />
+            <field name="active" eval="True " />
             <field name="user_id" ref="base.user_root" />
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>

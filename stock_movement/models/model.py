@@ -23,61 +23,85 @@ class THStockConfigSettings(models.TransientModel):
 
     _inherit = "stock.config.settings"
 
+    @api.model
+    def get_default_sent_alert(self, fields):
+        # don't forward-port in v11.0, the API of config wizards changed.
+        # digits = self.env.ref('product.decimal_stock_weight').digits
+        return {'sent_alert': self.env.user.company_id.sent_alert}
+
+    @api.multi
+    def set_sent_alert(self):
+        # don't forward-port in v11.0, the API of config wizards changed.
+        self.company_id.sent_alert = self.sent_alert
+
+    @api.model
+    def get_default_limit_days(self, fields):
+        # don't forward-port in v11.0, the API of config wizards changed.
+        # digits = self.env.ref('product.decimal_stock_weight').digits
+        return {'limit_days': self.env.user.company_id.limit_days}
+
+    @api.multi
+    def set_limit_days(self):
+        # don't forward-port in v11.0, the API of config wizards changed.
+        self.company_id.limit_days = self.limit_days
+
+    @api.model
+    def get_default_alert_user(self, fields):
+        # don't forward-port in v11.0, the API of config wizards changed.
+        # digits = self.env.ref('product.decimal_stock_weight').digits
+        user_ids = [(4, user.id) for user in self.env.user.company_id.alert_user]
+        return {'alert_user': user_ids}
+
+    @api.multi
+    def set_alert_user(self):
+        # don't forward-port in v11.0, the API of config wizards changed.
+        self.company_id.alert_user = self.alert_user
+
     sent_alert = fields.Selection([
         ('globally', 'Globally'),
         ('category_wise', 'Category Wise'),
         ('warehouse_wise', 'Warehouse Wise')
-    ], string="Sent Alert", compute="_get_sent_alert", inverse="_set_sent_alert")
+    ], string="Sent Alert")
 
-    limit_days = fields.Integer("Limits Days", compute="_get_limit_days", inverse="_set_limit_days")
+    limit_days = fields.Integer("Limits Days")
 
-    alert_user = fields.Many2many('res.users', string="Select User", compute="_get_alert_user",
-                                  inverse="_set_alert_user", create=False)
+    alert_user = fields.Many2many('res.users', string="Select User")
 
     # display_message_category_wise = fields.Char("Message", placeholder="You Can Set Limit Days And User EMail Alert Directly From Company Setting Configuration")
 
     # display_message_warehouses_wise = fields.Char("Message", placeholder="You Can Set Limit Days And User EMail Alert Directly From WareHouse Setting Configuration")
 
-    @api.one
-    @api.depends('company_id')
-    def _get_sent_alert(self):
-        print("I amdginasdfgasdflasjdfl \n\n\n\n")
-        self.sent_alert = self.company_id.sent_alert
-
-    @api.one
-    @api.depends('company_id')
-    def _get_limit_days(self):
-        self.limit_days = self.company_id.limit_days
-
-    @api.one
-    @api.depends('company_id')
-    def _get_alert_user(self):
-        self.alert_user = self.company_id.alert_user
-
-    @api.one
-    def _set_sent_alert(self):
-        print("\n\n\n\n\n\n")
-        print(self.sent_alert)
-        print(self.company_id.sent_alert)
-        if self.sent_alert != self.company_id.sent_alert:
-            self.company_id.sent_alert = self.sent_alert
-
-    @api.one
-    def _set_limit_days(self):
-        if self.limit_days != self.company_id.limit_days:
-            self.company_id.limit_days = self.limit_days
-
-    @api.one
-    def _set_alert_user(self):
-        if self.alert_user != self.company_id.alert_user:
-            self.company_id.alert_user = self.alert_user
-
-
 
 class THProductCategory(models.Model):
     _inherit = "product.category"
 
-    limit_days = fields.Integer("Days", help="Please Enter No. Of Days")
+    sent_alert = fields.Selection([
+        ('globally', 'Globally'),
+        ('category_wise', 'Category Wise'),
+        ('warehouse_wise', 'Warehouse Wise')
+    ], string="Sent Alert", compute="get_sent_alert")
+    limit_days = fields.Integer("Limits Days")
+    alert_user = fields.Many2many('res.users', string="Select User")
+
+    @api.one
+    def get_sent_alert(self):
+        self.sent_alert = self.env.user.company_id.sent_alert
+
+
+class THStockWarehouse(models.Model):
+    _inherit = "stock.warehouse"
+
+    sent_alert = fields.Selection([
+        ('globally', 'Globally'),
+        ('category_wise', 'Category Wise'),
+        ('warehouse_wise', 'Warehouse Wise')
+    ], string="Sent Alert", compute="get_sent_alert")
+    limit_days = fields.Integer("Limits Days")
+    alert_user = fields.Many2many('res.users', string="Select User")
+
+    @api.one
+    def get_sent_alert(self):
+        self.sent_alert = self.env.user.company_id.sent_alert
 
 
 class THProduct(models.Model):
@@ -133,12 +157,35 @@ class THProduct(models.Model):
     # method for send_email_alert
     @api.model
     def send_email_alert(self):
-        product_recs = self.env["product.product.report"].create({})
-        print("product_res", product_recs)
-        template = self.env.ref('stock_movement.email_alert_template')
-        print("template", template)
+        if self.env.user.company_id.sent_alert == 'globally':
+            product_recs = self.env["product.product.report"].create({'sent_alert': self.env.user.company_id.sent_alert})
+            print("product_res", product_recs)
+            template = self.env.ref('stock_movement.email_alert_template')
+            print("template", template)
 
-        template.send_mail(product_recs.id)
+            template.send_mail(product_recs.id)
+        if self.env.user.company_id.sent_alert == 'category_wise':
+            category_recs = self.env['product.category'].search([('limit_days', '>', 0), ('alert_user', '!=', False)])
+            for category_rec in category_recs:
+                product_recs = self.env["product.product.report"].create({
+                    'sent_alert': self.env.user.company_id.sent_alert,
+                    'current_category_id': category_rec.id})
+                print("product_res", product_recs)
+                template = self.env.ref('stock_movement.email_alert_template')
+                print("template", template)
+
+                template.send_mail(product_recs.id)
+        if self.env.user.company_id.sent_alert == 'warehouse_wise':
+            warehouse_recs = self.env['stock.warehouse'].search([('limit_days', '>', 0), ('alert_user', '!=', False)])
+            for warehouse_rec in warehouse_recs:
+                product_recs = self.env["product.product.report"].create({
+                    'sent_alert': self.env.user.company_id.sent_alert,
+                    'current_warehouse_id': warehouse_rec.id})
+                print("product_res", product_recs)
+                template = self.env.ref('stock_movement.email_alert_template')
+                print("template", template)
+
+                template.send_mail(product_recs.id)
 
 
     # method for select multiple email address

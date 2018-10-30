@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="slow_moving_product_report">
+
+            <t t-name="slow_moving_product_report_name">
+                <t t-call="report.html_container">
+
+                    <t t-call="report.external_layout">
+                        <div class="page">
+                            <center><p><strong> This is My Slow Moving Product Report </strong></p></center>
+                            <br/>
+                            <div class="row mt32 mb32" >
+                                <div class="col-xs-3">
+                                    <strong>Product Name</strong>
+                                </div>
+                                <div class="col-xs-3">
+                                    <strong>Last Move Date</strong>
+                                </div>
+                                <div class="col-xs-3">
+                                    <strong>Move Days</strong>
+                                </div>
+                                <div class="col-xs-3">
+                                    <strong>Quantity Available</strong>
+                                </div>
+                            </div>
+                            <t t-foreach="docs" t-as="object">
+                                <div class="row mt32 mb32" >
+                                    <div class="col-xs-3">
+                                        <strong><span t-field="object.name"/></strong>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <span t-field="object.last_move_date"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <span t-field="object.move_days"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <span t-field="object.qty_available"/>
+                                    </div>
+                                </div>
+                            </t>
+                            <table class="table table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Last Move Date</th>
+                                        <th class="text-right">Move Days</th>
+                                        <th class="text-right">Quantity Available</th>
+                                    </tr>
+                               </thead>
+                               <tbody class="sale_tbody">
+                                   <t t-foreach="docs" t-as="object">
+                                       <tr>
+                                            <td><span t-field="object.name"/></td>
+                                           <td><span t-field="object.last_move_date"/></td>
+                                           <td class="text-right" ><span t-field="object.move_days"/></td>
+                                           <td class="text-right" ><span t-field="object.qty_available"/></td>
+                                       </tr>
+                                   </t>
+                               </tbody>
+                            </table>
+                        </div>
+                    </t>
+
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

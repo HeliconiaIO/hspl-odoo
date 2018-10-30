@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- QWeb Reports -->
+        <report
+            id="slow_moving_product_report_defination"
+            model="report.stock_movement.slow_moving_product_report"
+            string="Slow Moving Product's"
+            report_type="qweb-pdf"
+            name="stock_movement.slow_moving_product_report"
+            file="stock_movement.slow_moving_product_report"/>
+    </data>
+</odoo>

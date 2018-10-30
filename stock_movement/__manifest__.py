@@ -10,7 +10,9 @@
     'depends': ['base', 'stock', 'product', 'sales_team'],
     'data': [
         'view/view.xml',
-        'wizard/wizard_view.xml'
+        'wizard/wizard_view.xml',
+        'report/slow_moving_product_report.xml',
+        'report/slow_moving_product_report_definition.xml'
     ],
     'demo': [],
     'installable': True,

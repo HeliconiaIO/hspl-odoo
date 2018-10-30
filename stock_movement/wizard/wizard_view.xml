@@ -20,31 +20,40 @@
             <field name="arch" type="xml">
                 <form string="Stock Movement">
                     <sheet>
-
                         <group>
-                            <field name="from_date" required="1" placeholder="Enter Start Date..."/>
-                            <field name="to_date" required="2" placeholder="Enter End Date..."/>
+                            <field name="from_date" placeholder="Enter Start Date..."/>
+                            <field name="to_date" placeholder="Enter End Date..."/>
                             <!--<field name="warehouse_name" required="3" placeholder="Select Warehouse's"/>-->
                         </group>
+                        <group>
+                            <field name="days" />
+                        </group>
+                        <group>
+                            <field name="cate_ware_selection" widget="radio"/>
+                        </group>
+                        <group>
+                            <!--<field name="current_category_id"  widget="many2many_tags" attrs="{'invisible':[('cate_ware_selection', '!=','category')], 'required':[('cate_ware_selection', '!=','warehouse')]}"/>-->
+                            <field name="current_category_id"  widget="many2many_tags"
+                                   attrs="{'invisible':[('cate_ware_selection', '!=','category')],
+                                'required':[('cate_ware_selection', '=','category')]}"/>
+                        </group>
+                        <group>
+                            <!--<field name="current_warehouse_id"  widget="many2many_tags" attrs="{'invisible':[('cate_ware_selection', '!=','warehouse')], 'required':[('cate_ware_selection', '!=','category')]}"/>-->
+                            <field name="current_warehouse_id"  widget="many2many_tags"
+                                   attrs="{'invisible':[('cate_ware_selection', '!=','warehouse')],
+                                  'required':[('cate_ware_selection', '=','warehouse')]}"/>
+                        </group>
 
-
-                        <!--<div class="oe_title">-->
-                        <!--<h2>-->
-                        <!--<table>-->
-                        <!--<tr>-->
-                        <!--<td style="padding-right:10px;">-->
-                        <!--<field name="from_date" required="1" placeholder="Enter Start Date..."/>-->
-                        <!--</td>-->
-                        <!--<td style="padding-right:10px;">-->
-                        <!--<field name="to_date" required="2" placeholder="Enter End Date..."/>-->
-                        <!--</td>-->
-                        <!--</tr>-->
-                        <!--</table>-->
-                        <!--</h2>-->
-                        <!--&lt;!&ndash;<button type="object" string="Generate"/>&ndash;&gt;-->
-                        <!--</div>-->
-
-
+                        <!--<group>-->
+                            <!--<field name="current_category_id"  widget="many2many_tags"-->
+                                   <!--attrs="{'invisible':[('cate_ware_selection', '!=','category')],-->
+                                <!--'required':[('cate_ware_selection', '=','category')}"/>-->
+                        <!--</group>-->
+                        <!--<group>-->
+                            <!--<field name="current_warehouse_id"  widget="many2many_tags"-->
+                                   <!--attrs="{'invisible':[('cate_ware_selection', '!=','warehouse')],-->
+                                  <!--'required':[('cate_ware_selection', '=','warehouse')}"/>-->
+                        <!--</group>-->
                     </sheet>
                     <footer>
                         <button type="object"  name="generate_report"  class="oe_highlight" string="Generate"/>
@@ -91,22 +100,6 @@
         ]]>
             </field>
         </record>
-
-
-              <!--product category inherit form view-->
-        <record id="product_category_form_view" model="ir.ui.view">
-            <field name="name">product.category.form.view</field>
-            <field name="model">product.category</field>
-            <field name="inherit_id" ref="product.product_category_form_view"/>
-            <field name="arch" type="xml">
-                <field name="type" position="after">
-                    <field name="limit_days"/>
-                </field>
-            </field>
-        </record>
-
-
-
 
         <!--email template for transient model and working for list od products-->
         <!--EMAIL TEMPLATE -->
